@@ -12,6 +12,7 @@ library(tidyverse)
 library(janitor)
 library(here)
 library(sf)
+library(rgdal)
 
 ```
 
@@ -68,8 +69,14 @@ d_tulare <- read.csv(here("data/gama_all_tulare.csv")) |>                       
 
 kern_raw <- read.csv(here("data/gama_all_kern.csv"))
   
-  
-  
+
+## Read in shapefile using rgdal
+
+system.time(kern_shp_rgdal <- readOGR(dsn="data/CountyLimit", layer="data/CountyLimit/CountyLimit.shp"))
+
+##modified code 
+kern_shp_rgdal <- sf::st_read("data/CountyLimit", "CountyLimit.shp")
+#TRYING TO  READ IN sHAPEFILES FOR kERN
   
 ```
 

@@ -404,7 +404,17 @@ d_tulare &lt;- read.csv(here(&quot;data/gama_all_tulare.csv&quot;)) |&gt;       
          chemical = gm_chemical_name)|&gt;
   mutate(county = &quot;Tulare&quot;) |&gt;                                                  #adding column for county
   filter(!sector %in% c(&quot;WATER SUPPLY, OTHER&quot;, &quot;MONITORING&quot;))                   #filtering out vague or unnecessary well data </code></pre>
-<pre class="r"><code>kern_raw &lt;- read.csv(here(&quot;data/gama_all_kern.csv&quot;))</code></pre>
+<pre class="r"><code>kern_raw &lt;- read.csv(here(&quot;data/gama_all_kern.csv&quot;))
+  
+
+## Read in shapefile using rgdal
+
+system.time(kern_shp_rgdal &lt;- readOGR(dsn=&quot;data/CountyLimit&quot;, layer=&quot;data/CountyLimit/CountyLimit.shp&quot;))</code></pre>
+<pre><code>## Error in ogrInfo(dsn = dsn, layer = layer, encoding = encoding, use_iconv = use_iconv, : Cannot open data source</code></pre>
+<pre class="r"><code>##modified code 
+kern_shp_rgdal &lt;- sf::st_read(&quot;data/CountyLimit&quot;, &quot;CountyLimit.shp&quot;)</code></pre>
+<pre><code>## Error: Cannot open &quot;data/CountyLimit&quot;; The file doesn&#39;t seem to exist.</code></pre>
+<pre class="r"><code>#TRYING TO  READ IN sHAPEFILES FOR kERN</code></pre>
 </div>
 
 
