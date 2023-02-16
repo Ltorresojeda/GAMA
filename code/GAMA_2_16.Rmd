@@ -1,0 +1,75 @@
+---
+title: "GAMA_2_16"
+author: "Lucero Torres"
+date: "2023-02-16"
+output: html_document
+---
+#### Step #1: Set global options and load packages
+```{r setup, include = FALSE, error = TRUE, warning = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(janitor)
+library(here)
+library(sf)
+
+```
+
+#### Step 2: Load & Clean Data 
+```{r, error = TRUE, message = FALSE, warning = FALSE}
+
+d_madera <- read.csv(here("data/gama_all_madera.csv")) |>                       #create object called d_madera,load data
+  clean_names() |>                                                              #clean names
+  filter(gm_chemical_name %in% c("Chromium", "Arsenic", "Nitrate as N")) |>     #filter out specified contaminanta
+  select(gm_well_category,                                                      #selecting specific columns 
+         gm_result, 
+         gm_samp_collection_date, 
+         gm_chemical_name) |>
+  rename(sector = gm_well_category,                                             #renaming columns into concise names
+         result = gm_result,
+         samp_date = gm_samp_collection_date, 
+         chemical = gm_chemical_name)|>
+  mutate(county = "Madera") |>                                                  #adding column for county 
+  filter(!sector %in% c("WATER SUPPLY, OTHER", "MONITORING"))                   #filtering out vague or unnecessary well data 
+
+d_kern <- read.csv(here("data/gama_all_kern.csv")) |>                           #creating object called d_kern,load data
+    clean_names() |>                                                            #clean names
+  filter(gm_chemical_name %in% c("Chromium", "Arsenic", "Nitrate as N")) |>     #filter out specified contaminanta
+  select(gm_well_category,                                                      #selecting specific columns 
+         gm_result, 
+         gm_samp_collection_date, 
+         gm_chemical_name) |>
+  rename(sector = gm_well_category,                                             #renaming columns into concise names
+         result = gm_result,
+         samp_date = gm_samp_collection_date, 
+         chemical = gm_chemical_name)|>
+  mutate(county = "Kern") |>                                                    #adding column for county 
+  filter(!sector %in% c("WATER SUPPLY, OTHER", "MONITORING"))                   #filtering out vague or unnecessary well data 
+
+
+d_tulare <- read.csv(here("data/gama_all_tulare.csv")) |>                       #creating object d_tulare,load data
+   clean_names() |>                                                             #clean names
+  filter(gm_chemical_name %in% c("Chromium", "Arsenic", "Nitrate as N")) |>     #filter out specified contaminants
+  select(gm_well_category,                                                      #selecting specific columns 
+         gm_result, 
+         gm_samp_collection_date,
+         gm_chemical_name) |>
+  rename(sector = gm_well_category,                                             #renaming columns into concise names
+         result = gm_result,
+         samp_date = gm_samp_collection_date, 
+         chemical = gm_chemical_name)|>
+  mutate(county = "Tulare") |>                                                  #adding column for county
+  filter(!sector %in% c("WATER SUPPLY, OTHER", "MONITORING"))                   #filtering out vague or unnecessary well data 
+
+
+```
+
+```{r, error = TRUE, message = FALSE, warning = FALSE}
+
+kern_raw <- read.csv(here("data/gama_all_kern.csv"))
+  
+  
+  
+  
+```
+
