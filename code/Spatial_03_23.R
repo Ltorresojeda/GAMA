@@ -31,10 +31,15 @@ kern_ammonia_st <- st_transform(kern_ammonia_sf, crs = 4326)
 kern_shp_3338 <- st_transform(kern_shp, crs = 4326)
 
 
-well_id_joined <- st_join(kern_ammonia_st, kern_shp_3338,join = st_within)
-plot(well_id_joined["gm_result"])
+well_id_joined <- st_join(kern_shp_3338, kern_ammonia_st, join = st_contains)
+plot(well_id_joined["gm_result"], axes = TRUE)
 
 
 
-##### interactive plot
+##### geom_sf plot
 
+kern_ammonia_plot <- ggplot(data=kern_shp_3338) + 
+                    geom_sf() +
+                    xlab("Longitude") + ylab("Latitude") +
+                    ggtitle("Wells with Ammonia Measurement in Kern County")
+kern_ammonia_plot                    
