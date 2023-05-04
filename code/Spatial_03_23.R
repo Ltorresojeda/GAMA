@@ -27,6 +27,7 @@ kern_ammonia_sf <- st_as_sf(kern_ammonia,
                     crs = 4326,
                     remove = F)
 
+# change coordinates of a geometry from one spatial reference to another
 kern_ammonia_st <- st_transform(kern_ammonia_sf, crs = 4326)
 kern_shp_3338 <- st_transform(kern_shp, crs = 4326)
 
@@ -36,10 +37,37 @@ plot(well_id_joined["gm_result"], axes = TRUE)
 
 
 
-##### geom_sf plot
+##### exploring arguments in geom_sf plot
 
-kern_ammonia_plot <- ggplot(data=kern_shp_3338) + 
-                    geom_sf() +
+kern_plot <- ggplot(data=kern_shp_3338) + 
+                    geom_sf(fill = "antiquewhite") +
                     xlab("Longitude") + ylab("Latitude") +
-                    ggtitle("Wells with Ammonia Measurement in Kern County")
-kern_ammonia_plot                    
+                    ggtitle("Kern County") +
+                    theme(panel.grid.major = element_line(color = gray(.5), 
+                          linetype = "dashed", size = 0.5), 
+                          panel.background = element_rect(fill = "white"))
+kern_plot                    
+
+# well locations
+kern_well_plot <- ggplot(data=kern_ammonia_sf) + 
+                  geom_sf(fill = "antiquewhite") +
+                  xlab("Longitude") + ylab("Latitude") +
+                  ggtitle("Wells with Ammonia Measurement in Kern County")
+kern_well_plot     
+
+# plotting joined shp and sf object
+
+kern_ammonia_plot <- ggplot() + 
+  geom_sf(data = kern_shp_3338, fill = NA, lwd = 0.5, col = 'black') +
+  geom_point(data = kern_ammonia_sf, 
+             aes( x = gm_longitude, 
+                  y = gm_latitude),
+             col = 'white',
+             fill = 'cadetblue4',
+             shape = 21,
+             size = 3,
+             alpha = 0.4) +
+  theme_void() +
+  xlab("Longitude") + ylab("Latitude") +
+  ggtitle("Wells with Ammonia Measurement in Kern County")
+kern_ammonia_plot   
