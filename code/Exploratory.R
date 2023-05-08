@@ -38,3 +38,6 @@ chemicals_interest %>%
   theme(plot.title = element_text(face="bold", size= 18),
         axis.title.x = element_text(face="bold", size = 15),
         axis.title.y = element_text(face="bold", size = 15))
+
+
+
