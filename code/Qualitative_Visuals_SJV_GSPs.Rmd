@@ -1,0 +1,705 @@
+---
+title: "Qualitative_Visuals_SJV_GSPs"
+author: "Lucero Torres"
+date: "2023-10-20"
+output:
+  html_document: default
+  pdf_document: default
+---
+## Loading global options and Libraries
+##### This code creates a bar chart to visualize the distribution of responses in the dataset.
+##### It orders the responses as 'Yes,' 'No,' and 'Somewhat,' and sets various plot aesthetics.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(googledrive)
+library(googlesheets4)
+library(dplyr)
+library(tidyverse)
+library(janitor)
+library(ggplot2)
+
+```
+
+## Importing qualitative data from google sheets
+```{r, error = TRUE, message = FALSE, warning = FALSE}
+# Provide the URL of the Google Sheets document
+
+sheet_url <- "https://docs.google.com/spreadsheets/d/1stKlA09cU8-shxV4R0Fy1fssLB8TsJ
+              us8R37aQ9xo-o/edit#gid=1097956242"                                     #establishing access to doc
+
+#create object called gsp_raw_data, load data
+gsp_raw_data <- read_sheet("1stKlA09cU8-shxV4R0Fy1fssLB8TsJus8R37aQ9xo-o")           #reading in sheet url
+
+
+#gsp_raw_trial <- read_sheet("1stKlA09cU8-shxV4R0Fy1fssLB8TsJus8R37aQ9xo-o",         #reads in a specific sheet
+# sheet = "25")                                                                      #must manually write each in
+
+#cleaning the name of our data 
+gsp_raw_data <- clean_names(gsp_raw_data) |>                                         #creating consistent column names using snake_case
+  rename(gsp_id = x6)                                                                #renaming column to identify gsp_id
+
+
+```
+
+## Organizing Data for Analysis
+##### Contaminants of Concern Identified
+```{r, message = FALSE, warning = FALSE, include = TRUE}
+
+#organize all 45 gsp qualitative data by contaminant
+as_iden_gsp <- gsp_raw_data |>                                                       #creating a new df for arsenic 
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[1] Does GSP mention Arsenic as a contaminant of concern?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+
+#organize all 45 gsp qualitative data by contaminant
+cr_iden_gsp <- gsp_raw_data |>                                                       #creating a new df for chromium
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[2] Does GSP mention Chromium as a contaminant of concern?")) |>
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+#organize all 45 gsp qualitative data by contaminant
+n_iden_gsp <- gsp_raw_data |>                                                        #creating a new df for nitrates 
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[3] Does GSP mention Nitrates as a contaminant of concern?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+```
+
+##### Contaminants of Concern Identified Sites
+```{r, message = FALSE, warning = FALSE, include = TRUE}
+
+#organize all gsp qualitative data by question 1.a
+as_sites_gsp <- gsp_raw_data |>                                                      #creating a new df for arsenic identified sites
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[1a]  Does GSP identify the sites of contamination?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+
+#organize all gsp qualitative data by question 1.a
+cr_sites_gsp <- gsp_raw_data |>                                                      #creating a new df for chromium identified sites
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[2a]  Does GSP identify the sites of contamination?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+
+#organize all gsp qualitative data by question 1.a
+n_sites_gsp <- gsp_raw_data |>                                                      #creating a new df for nitrates identified sites
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[3a]  Does GSP identify the sites of contamination?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+```
+
+##### Contaminants of Concern Distance Measured from DACs
+```{r, message = FALSE, warning = FALSE, include = TRUE}
+
+#organize all gsp qualitative data by question 1.b
+as_dm_sites_gsp <- gsp_raw_data |>                                                      #creating a new df for arsenic dist. meas. sites[DACs]
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[1b] Are they near DACs? If so, is the distance measured?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+
+#organize all  gsp qualitative data by question 1.b
+cr_dm_sites_gsp <- gsp_raw_data |>                                                      #creating a new df for chromium dist. meas. sites[DACs]
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[2b] Are they near DACs? If so, is the distance measured?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+
+#organize all  gsp qualitative data by question 1.b
+n_dm_sites_gsp <- gsp_raw_data |>                                                      #creating a new df for nitrates dist. meas. sites[DACs]
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[3b] Are they near DACs? If so, is the distance measured?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+```
+
+##### Contaminant of Concern Identified Minimum Thresholds
+```{r, message = FALSE, warning = FALSE, include = TRUE}
+
+#organize all gsp qualitative data by question 1.c
+as_i_mt_gsp <- gsp_raw_data |>                                                      #creating a new df for arsenic ident. minimum thresholds
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[1c] What is the minimum threshold for Arsenic?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+
+#organize all  gsp qualitative data by question 1.c
+cr_i_mt_gsp <- gsp_raw_data |>                                                      #creating a new df for chromium ident. minimum thresholds
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[2c] What is the minimum threshold for Chroimum-6?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+
+#organize all  gsp qualitative data by question 1.c
+n_i_mt_gsp <- gsp_raw_data |>                                                      #creating a new df for nitrates ident. minimum thresholds
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[3c] What is the minimum threshold for Nitrates?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+
+```
+
+##### Contaminant of Concern Identified Depth Of Contamination
+```{r, message = FALSE, warning = FALSE, include = TRUE}
+
+#organize all gsp qualitative data by question 1.d
+as_do_cont_gsp <- gsp_raw_data |>                                                      #creating a new df for arsenic depth of cont.
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[1d] Is the depth of contamination addressed?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+
+#organize all  gsp qualitative data by question 1.d
+cr_do_cont_gsp <- gsp_raw_data |>                                                      #creating a new df for chromium depth of cont.
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[3d] Is the depth of contamination addressed?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+
+#organize all  gsp qualitative data by question 1.d
+n_do_cont_gsp <- gsp_raw_data |>                                                      #creating a new df for nitrates depth of cont.
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[3d] Is the depth of contamination addressed?")) |>                        
+  select(questions, response, definition, gsp_id)  
+
+```
+
+##### DACs Mentioned & Mapped
+```{r, message = FALSE, warning = FALSE, include = TRUE}
+
+#organize all gsp qualitative data for identified disadvantaged communities 
+all_cont_dac_iden <- gsp_raw_data |>                                                 #creating a new df for disadvantaged communities identified
+  filter(questions %in%                                                              #filtering by question of interest
+           c("[4] Are Disadvantaged Communities mentioned and mapped in the GSP?")) |>                        
+  select(questions, response, definition, gsp_id)                                    #selecting 4 cols of interest
+
+
+```
+
+
+
+## Plotting Qualitative Data Questions 1.0, 2.0, and 3.0
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+##initializing ggplot & plotting data for arsenic
+ggplot(as_iden_gsp,                                                                  #graphing arsenic response data from gsps
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response 
+       # aes(x=reorder(response, response, function(x)-length(x)))) +                #reorders the response by highest counts [not used]
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 1: Arsenic Identified in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,35),                                               #setting y limit
+                     breaks = seq(0, 35, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid', 
+                                  color = "black")) +                                
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+```
+
+
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, fig.width = 8, fig.height = 4.6}
+
+##initializing ggplot & plotting data for chromium
+ggplot(cr_iden_gsp,                                                                  #graphing chromium response data from gsps
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 2: Chromium Identified in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,35),                                               #setting y limit
+                     breaks = seq(0, 35, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid', 
+                                  color = "black")) +                                
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+```
+
+
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, fig.width = 8, fig.height = 4.6}
+
+##initializing ggplot & plotting data for nitrates
+ggplot(n_iden_gsp,                                                                   #graphing nitrates response data from gsps
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response 
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 3: Nitrates Identified in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,35),                                               #setting y limit
+                     breaks = seq(0, 35, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid', 
+                                  color = "black")) +                                
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+
+
+```
+
+
+
+## Plotting Qualitative Data Subquestion 1.A, 2.A, and 3.A
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for arsenic
+ggplot(n_sites_gsp,                                                                  #graphing arsenic site data from gsps
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 1.A: Arsenic Sites Identified in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,35),                                               #setting y limit
+                     breaks = seq(0, 35, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                               
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+```
+
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for chromium
+ggplot(cr_sites_gsp,                                                                  #graphing chromium site data from gsps
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 2.A: Chromium Sites Identified in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,35),                                               #setting y limit
+                     breaks = seq(0, 35, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                                
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+```
+
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for nitrate
+ggplot(n_sites_gsp,                                                                  #graphing nitrate sites data from gsps
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 3.A: Nitrates Sites Identified in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,35),                                               #setting y limit
+                     breaks = seq(0, 35, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                                
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+```
+
+## Plotting Qualitative Data Subquestion 1.B, 2.B, and 3.B
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for arsenic
+ggplot(as_dm_sites_gsp ,                                                             #graphing arsenic dist. meas. sites[DACs]
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 1.B: Arsenic Sites Identified & Measured Near Disadvantaged Communities in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,45),                                               #setting y limit
+                     breaks = seq(0, 45, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0.8, size = 7.12, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                                
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+```
+
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for chromium
+ggplot(cr_dm_sites_gsp,                                                              #graphing chromium dist. meas. sites[DACs]
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 2.B: Chromium Sites Identified & Measured Near Disadvantaged Communities in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,45),                                               #setting y limit
+                     breaks = seq(0, 45, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0.8, size = 7.12, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                               
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+```
+
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for nitrates
+ggplot(n_dm_sites_gsp,                                                               #graphing nitrates dist. meas. sites[DACs]
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 3.B: Nitrates Sites Identified & Measured Near Disadvantaged Communities in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,45),                                               #setting y limit
+                     breaks = seq(0, 45, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0.8, size = 7.12, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                                
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+```
+
+
+## Plotting Qualitative Data Subquestion 1.C, 2.C, and 3.C
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for arsenic
+ggplot(as_i_mt_gsp ,                                                                 #graphing arsenic dist. meas. sites[DACs]
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 1.C: Minimum Thresholds for Arsenic in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,45),                                               #setting y limit
+                     breaks = seq(0, 45, by = 5)) +                                  #making breaks in counts of 5s                          #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                                
+        scale_fill_manual(values = c("MT indicated" = "darkolivegreen3",             #manually set fill colors for response categories
+                                     "MT not indicated" = "firebrick2"))
+
+```
+
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for chromium
+ggplot(cr_i_mt_gsp ,                                                                 #graphing chromium dist. meas. sites[DACs]
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 2.C: Minimum Thresholds for Chromium in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,45),                                               #setting y limit
+                     breaks = seq(0, 45, by = 5)) +                                  #making breaks in counts of 5s                          #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                                
+        scale_fill_manual(values = c("MT indicated" = "darkolivegreen3",             #manually set fill colors for response categories
+                                     "MT not indicated" = "firebrick2"))
+```
+
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for nitrates
+ggplot(n_i_mt_gsp ,                                                                 #graphing nitrates dist. meas. sites[DACs]
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 3.C: Minimum Thresholds for Nitrates in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,45),                                               #setting y limit
+                     breaks = seq(0, 45, by = 5)) +                                  #making breaks in counts of 5s                          #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 0, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                                
+        scale_fill_manual(values = c("MT indicated" = "darkolivegreen3",             #manually set fill colors for response categories
+                                     "MT not indicated" = "firebrick2"))
+
+
+```
+
+## Plotting Qualitative Data Subquestion 1.D, 2.D, and 3.D
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for arsenic
+ggplot(as_do_cont_gsp ,                                                              #graphing arsenic depth of cont.
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 1.D: Depth Contamination Addressed for Arsenic in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +                                                                                    #setting caption label
+  scale_y_continuous(limits = c(0,45),                                               #setting y limit
+                     breaks = seq(0, 45, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 1.5, size = 8, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                               
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+```
+
+
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for chromium
+ggplot(cr_do_cont_gsp ,                                                              #graphing chromium depth of cont.
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 1.D: Depth Contamination Addressed for Chromium in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +                                                                                    #setting caption label
+  scale_y_continuous(limits = c(0,45),                                               #setting y limit
+                     breaks = seq(0, 45, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 1.5, size = 8, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                               
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+```
+
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for nitrates
+ggplot(n_do_cont_gsp ,                                                               #graphing nitrates depth of cont.
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 1.D: Depth Contamination Addressed for Nitrates in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +                                                                          #setting caption label
+  scale_y_continuous(limits = c(0,45),                                               #setting y limit
+                     breaks = seq(0, 45, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = 1.5, size = 8, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                               
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+
+```
+
+## Plotting Qualitative Data Question 4.0
+```{r, warning = FALSE, message = FALSE, error = TRUE, echo = TRUE, tidy=TRUE, fig.width = 8, fig.height = 4.6}
+
+#initializing ggplot & plotting data for identified disadvantaged communities 
+ggplot(all_cont_dac_iden,                                                            #graphing DACs mentioned and mapped
+       aes(x = response,                                                             #x axis response data w/ y = counts
+           fill = response)) +                                                       #fill by response
+  geom_bar(position = position_dodge(0.5)) +                                         #setting spacing of bars
+  labs(x = "Response",                                                               #filling x labels
+       y = "Count",                                                                  #filling y labels
+       caption = "Figure 4.0: Disadvantaged Communities Mentioned and Mapped in San Joaquin Valley Groundwater Sustainabilty Plans. Data from DWR (2022).") +  #setting caption label
+  scale_y_continuous(limits = c(0,35),                                               #setting y limit
+                     breaks = seq(0, 35, by = 5)) +                                  #making breaks in counts of 5s
+  scale_x_discrete(limits = c('Yes', 'No', 'Somewhat')) +                            #set the desired order
+  theme_bw() +                                                                       #using bw theme
+  theme(axis.text = element_text(color = "black", size = 7),                         #setting axis text sizing and color
+        axis.title = element_text(color = "black", size = 10, face = "bold"),        #setting axis title sizing, color, and style
+        plot.caption = element_text(hjust = -0.5, size= 7.5, color = "black", face = "bold"),      #setting caption options
+        legend.position = "",                                                        #making legend unavailable
+        panel.grid.major = element_line(size = 0.5, linetype = 'dotted',             #configure grid lines for the major and minor grid
+                                        colour = "lightgrey"),
+        panel.grid.minor = element_line(size = 0.5, linetype = 'dotted',
+                                        colour = "lightgrey"),
+        axis.ticks.x=element_blank(),                                                #remove tick marks on the x-axis for a cleaner appearance
+        axis.ticks.y=element_line(size = 0.5,                                        #customize tick marks on the y-axis: size, linetype, and color
+                                  linetype = 'solid',
+                                  color = "black")) +                               
+        scale_fill_manual(values = c(Yes = "darkolivegreen3",                        #manually set fill colors for response categories
+                                     No = "firebrick2",
+                                     Somewhat = "darkorange"))
+
+```
